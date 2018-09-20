@@ -15,6 +15,9 @@
 
 ## grep_tcgav9_eachTumor.py
 * Input: 
-** 1: file with g.name in each line
-** 2: TCGA folder
+1. file with g.name in each line
+1.  TCGA folder
 * Output: g.name with TCGA hit in each cancer
+```
+/path/to/grep_tcgav9_eachTumor.py <g.name file> <path to TCGA>
+```
