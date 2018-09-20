@@ -1,0 +1,23 @@
+## awk scripts for parsing snpEff file
+## parse SnpeEff output for g.name, c.name, transcript, p.name, gene_name
+cat instances.snpeff.vcf |awk '{if($1 ~/^chr/){chr=substr($1,4);split($8,info,";");for(j=1;j<=length(info);j++){if(info[j] ~/^ANN=/)anno=info[j];}split(anno,ann,",");c="";tr="";p="";for(m=1;m<=length(ann);m++){if(p == ""){split(ann[m],list,"|");if(list[7] ~/^ENST/){c=list[10];tr=list[7];p=list[11];}}}gene=substr(info[1],6);print "g."chr":"$2$4">"$5"\t"c"("tr")\t"gene" "p;}}'
+
+##parse SnpeEff output for g.name, c.name, transcript, p.name, genename. Get the first transcript with both c. And p. And it is in the canonical list
+cat instances.snpeff.vcf |awk '{if($1 ~/^chr/){chr=substr($1,4);split($8,info,";");for(j=1;j<=length(info);j++){if(info[j] ~/^canonical/){canonical_list=substr(info[j],13);split(substr(info[j],13),canonical,",");}else if(info[j] ~/^ANN=/)anno=info[j];}split(anno,ann,",");c="";tr="";p="";for(m=1;m<=length(ann);m++){if(p == "")\{split(ann[m],list,"|");if(list[7] ~/^ENST/){split(list[7],tx,".");for(n=1;n<=length(canonical);n++){if(tx[1]==canonical[n]){c=list[10];tr=list[7];p=list[11];}}}}\}gene=substr(info[1],6);print "g."chr":"$2$4">"$5"\t"c"("tr")\t"gene" "p"\t"canonical_list;}}' >instances.snpeff.gcp.canoical.txt
+
+
+##COSMIC content comparison for the 40 new SNP
+###ctDNA 1.1 and ctDNA 2.0, using the ANN_DB_BINA file. 
+####1. Generate g.id and infor file from merged annotation file
+cat RUO_default_annotations_11152016.vcf |awk '{if($1 ~/^chr/){print $1":g."$2$4">"$5"\t"$8}}' |sort -k1 >RUO_default_annotations_11152016.vcf.gid
+####2. Generate g.id from SNP variant file
+####3.Join merged_annotation.gid with variants.gid
+####4.Parse cosmic, TCGA and dbSNP_Common infor
+Cat ctdna_v1_TPV_LOD_SNV_Indel_samples_filtered_snv_vcf.diff.snv.gid.anno11152016 |awk '{dbsnp_common="";tcga="";cosmic="";cosmic_id="";split($2,info,";");for(i=1;i<=length(info);i++){if(info[i] ~ /COSMIC_SITE_COUNT_SOMATIC/)cosmic=substr(info[i],27);if(info[i] ~/^COSMIC_ID/)cosmic_id=substr(info[i],11);if(info[i] ~/^TCGA_COUNT/)tcga=substr(info[i],12);if(info[i] ~/^DBSNP_COMMON/)dbsnp_common=substr(info[i],14)};print $1"\t"tcga"\t"dbsnp_common"\t"cosmic"\t"cosmic_id}' >ctdna_v1_TPV_LOD_SNV_Indel_samples_filtered_snv_vcf.diff.snv.gid.anno11152016.tcga_dbsnp_cosmic.txtCosmic 83 and Cosmic 76
+###Compare with annotation databases for CTDv1.0/v1.1 (COSMICv76 and TCGAv201608)
+####1.grep chr in TCGAv201608.txt file
+####2.grep chr in COSMICv76 Mut txt file
+###Compare with annotation databases for CTDv2.0 (COSMICv83 and TCGAv9)
+####1.grep chr in COSMICv83 txt file and match gid between input variant and COSMIC file
+./grep_tcgav9_eachTumor.py RUO_default_annotations_11152016.vcf.gid COSMIC_folder
+
