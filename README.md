@@ -12,3 +12,9 @@
 ```
 /path/to/ZerobasedBed_To_gdot.py <zero_based_BED file>
 ```
+
+## grep_tcgav9_eachTumor.py
+* Input: 
+** 1: file with g.name in each line
+** 2: TCGA folder
+* Output: g.name with TCGA hit in each cancer
