@@ -45,7 +45,7 @@ for line in open (bed_file):
         ref =left_base+ref
         alt = left_base
         pos = str(int(pos)-1)
-    ## For substitution and the Ref is shorter tha Alt, add the previous base in front of Ref., and add the previous base in front Alt.
+    ## For substitution and the Ref is longer tha Alt, add the previous base in front of Ref., and add the previous base in front Alt.
     elif (diff >0):
         ref =left_base+ref
         alt = left_base+alt
